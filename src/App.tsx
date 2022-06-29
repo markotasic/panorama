@@ -20,7 +20,12 @@ const App = () => {
 
   return (
     <Canvas camera={{ position: [0, 0, 0.1] }}>
-      <Controls />
+      <Controls
+        enableZoom={false}
+        enablePan={false}
+        enableDamping
+        dampingFactor={0.2}
+      />
       <Suspense fallback={null}>
         <Dome onClick={createSphere} />
       </Suspense>

@@ -5,7 +5,7 @@ import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
 extend({ OrbitControls });
 
-const Controls = () => {
+const Controls = (props: any) => {
   const { camera, gl } = useThree();
   const ref = useRef<OrbitControlsImpl>(null);
 
@@ -16,6 +16,7 @@ const Controls = () => {
 
   return (
     <OrbitControls
+      {...props}
       ref={ref}
       target={[0, 0, 0]}
       args={[camera, gl.domElement]}
