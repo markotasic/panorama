@@ -5,8 +5,6 @@ import Controls from './components/Controls';
 import Dome from './components/Dome';
 import Sphere from './components/Sphere';
 
-import './index.css';
-
 const App = () => {
   const [values, setValues] = useState<number[][]>([]);
 
