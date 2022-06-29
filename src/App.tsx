@@ -1,71 +1,20 @@
-import * as THREE from 'three';
-import { Suspense, useRef, useState } from 'react';
-import './index.css';
-import {
-  Canvas,
-  extend,
-  useFrame,
-  useThree,
-  useLoader,
-} from 'react-three-fiber';
-import { OrbitControls } from '@react-three/drei';
-import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import { Suspense, useState } from 'react';
+import { Canvas } from 'react-three-fiber';
+
+import Controls from './components/Controls';
+import Dome from './components/Dome';
 import Sphere from './components/Sphere';
 
-extend({ OrbitControls });
-
-function Controls(props: any) {
-  const { camera, gl } = useThree();
-  const ref = useRef<OrbitControlsImpl>(null);
-
-  useFrame((state) => {
-    if (!ref.current) return;
-    return ref.current.update();
-  });
-
-  return (
-    <OrbitControls
-      ref={ref}
-      target={[0, 0, 0]}
-      {...props}
-      args={[camera, gl.domElement]}
-    />
-  );
-}
-
-function Dome(props: any) {
-  const texture = useLoader(THREE.TextureLoader, '/panorama.jpg');
-
-  return (
-    <mesh
-      onClick={({ intersections }) => {
-        const { point } = intersections[0];
-
-        props.onClick(point);
-      }}
-    >
-      <sphereBufferGeometry attach='geometry' args={[700, 70, 40]} />
-      <meshBasicMaterial
-        attach='material'
-        map={texture}
-        side={THREE.BackSide}
-      />
-    </mesh>
-  );
-}
+import './index.css';
 
 const App = () => {
-  const [values, setValues] = useState<any>([]);
+  const [values, setValues] = useState<number[][]>([]);
 
-  const createSphere = (vector3: any) => {
-    console.log('vector3', vector3);
+  const createSphere = (vector2: { x: number; y: number }) => {
     if (values) {
-      setValues((oldArray: any) => [
-        ...oldArray,
-        [vector3.z, vector3.y, vector3.x],
-      ]);
+      setValues((oldArray) => [...oldArray, [0.5, vector2.y, vector2.x]]);
     } else {
-      setValues([[vector3.z, vector3.y, vector3.x]]);
+      setValues([[0.5, vector2.y, vector2.x]]);
     }
   };
 
@@ -77,7 +26,7 @@ const App = () => {
       </Suspense>
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      {values.map((position: []) => (
+      {values.map((position) => (
         <Sphere key={Math.random()} position={position} />
       ))}
     </Canvas>
