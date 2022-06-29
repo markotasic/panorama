@@ -1,25 +1,22 @@
 import * as THREE from 'three';
 import { useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
 
-// function Sphere(props: JSX.IntrinsicElements['mesh']) {
-function Sphere(props: any) {
+function Sphere(props: JSX.IntrinsicElements['mesh'] | any) {
   const mesh = useRef<THREE.Mesh>(null!);
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
 
-  useFrame((state, delta) => (mesh.current.rotation.x += 0.01));
   return (
     <mesh
       {...props}
       ref={mesh}
-      onClick={(event) => setActive(!active)}
-      // onClick={(event) => setColor(props.color)}
+      scale={active ? 1.5 : 1}
+      onClick={() => console.log('running')}
       onPointerOver={(event) => setHover(true)}
       onPointerOut={(event) => setHover(false)}
     >
-      <sphereBufferGeometry args={[0.05, 30, 30]} />
-      <meshStandardMaterial color={props.color} />
+      <sphereBufferGeometry args={[0.02, 30, 30]} />
+      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
     </mesh>
   );
 }

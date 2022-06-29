@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useRef, useState } from 'react';
 import './index.css';
 import {
   Canvas,
@@ -33,11 +33,18 @@ function Controls(props: any) {
   );
 }
 
-function Dome() {
+function Dome(props: any) {
   const texture = useLoader(THREE.TextureLoader, '/panorama.jpg');
+
   return (
-    <mesh>
-      <sphereBufferGeometry attach='geometry' args={[500, 60, 40]} />
+    <mesh
+      onClick={({ intersections }) => {
+        const { point } = intersections[0];
+
+        props.onClick(point);
+      }}
+    >
+      <sphereBufferGeometry attach='geometry' args={[700, 70, 40]} />
       <meshBasicMaterial
         attach='material'
         map={texture}
@@ -48,43 +55,32 @@ function Dome() {
 }
 
 const App = () => {
-  const [positionY, setPositionY] = useState<number>(0);
-  const [positionX, setPositionX] = useState<number>(0);
-  const [color, setColor] = useState<string>();
+  const [values, setValues] = useState<any>([]);
 
-  const vector = new THREE.Vector3(1.5, 0, 0);
-  console.log(vector);
+  const createSphere = (vector3: any) => {
+    console.log('vector3', vector3);
+    if (values) {
+      setValues((oldArray: any) => [
+        ...oldArray,
+        [vector3.z, vector3.y, vector3.x],
+      ]);
+    } else {
+      setValues([[vector3.z, vector3.y, vector3.x]]);
+    }
+  };
 
   return (
-    <>
-      <input
-        type='color'
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
-      />
-      <Canvas
-        camera={{ position: [0, 0, 0.1] }}
-        onClick={(e: any) => {
-          console.log(e);
-          setPositionY(e.screenY);
-          setPositionX(e.screenX);
-        }}
-      >
-        <Controls
-          enableZoom={false}
-          enablePan={false}
-          enableDamping
-          dampingFactor={0.2}
-        />
-        <Suspense fallback={null}>
-          <Dome />
-        </Suspense>
-        <ambientLight />
-        <pointLight position={[10, 10, 10]} />
-        <Sphere position={vector} color={color} />
-        <Sphere position={[1.2, 0, 0]} />
-      </Canvas>
-    </>
+    <Canvas camera={{ position: [0, 0, 0.1] }}>
+      <Controls />
+      <Suspense fallback={null}>
+        <Dome onClick={createSphere} />
+      </Suspense>
+      <ambientLight />
+      <pointLight position={[10, 10, 10]} />
+      {values.map((position: []) => (
+        <Sphere key={Math.random()} position={position} />
+      ))}
+    </Canvas>
   );
 };
 export default App;
